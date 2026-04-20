@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.cg.dtos.BookingRequestDto;
 import com.cg.dtos.BusRouteDto;
+import com.cg.dtos.CustomerDto;
 import com.cg.dtos.PassengerDto;
 import com.cg.dtos.RouteScheduleDto;
 import com.cg.entity.BusBooking;
@@ -18,6 +19,7 @@ import com.cg.entity.BusRoute;
 import com.cg.entity.Customer;
 import com.cg.entity.Passenger;
 import com.cg.entity.RouteSchedule;
+import com.cg.entity.User;
 import com.cg.exceptions.BadRequestException;
 import com.cg.exceptions.InvalidException;
 import com.cg.exceptions.NotFoundException;
@@ -39,6 +41,8 @@ public class BTBServiceImpl implements BTBService
 	private CustomerRepository cRepo;
 	@Autowired
 	private PassengerRepository pRepo;
+	@Autowired
+	private AuthService authService;
 	@Override
 	public RouteSchedule createSchedule(RouteScheduleDto dto) 
 	{
@@ -65,53 +69,60 @@ public class BTBServiceImpl implements BTBService
 		return rsRepo.save(schedule);
 	}
 
+	
 	@Override
 	public BusBooking bookTicket(BookingRequestDto dto) 
 	{
-		Optional<RouteSchedule> scheduleOpt= rsRepo.findById(dto.getScheduleId());
-		if(scheduleOpt.isEmpty())
-			throw new NotFoundException("Route schedule not found!");
-		Optional<Customer> customer= cRepo.findById(dto.getCustId());
-		if(customer.isEmpty())
-			throw new NotFoundException("Customer not found with id "+dto.getCustId());
-		List<PassengerDto> passengers= dto.getPassengers();
-		if(passengers.isEmpty())
-			throw new InvalidException("Enter passenger details");
-		RouteSchedule schedule= scheduleOpt.get();
-		if(!schedule.getSchStatus().equalsIgnoreCase("SCHEDULED"))
-			throw new InvalidException("Cannot book for this schedule as it has been started or completed!");
-		if(schedule.getAvlSeats()<passengers.size())
-			throw new InvalidException(passengers.size()+" seats are not available!");
-		BusBooking booking= new BusBooking();
-		booking.setSchedule(schedule);
-		booking.setCustomer(customer.get());
-		booking.setBookingDt(LocalDate.now());
-		booking.setBookingStatus("CONFIRMED");
-		//BusBooking saved= bsRepo.save(ticket);
-		List<Passenger> list= new ArrayList<>();
-		for(PassengerDto p: passengers)
-		{
-			Passenger entity= new Passenger();
-			entity.setPassengerName(p.getPassengerName());
-			entity.setPassengerAge(p.getPassengerAge());
-			entity.setSeatNo(p.getSeatNo());
-			schedule.setAvlSeats(schedule.getAvlSeats()-1);
-			rsRepo.save(schedule);
-			entity.setBooking(booking);
-			list.add(entity);
-		}
-		booking.setPassengers(list);
-		
-		return bsRepo.save(booking);
-	}
+	    RouteSchedule schedule = rsRepo.findById(dto.getScheduleId())
+	            .orElseThrow(() -> new NotFoundException("Route schedule not found"));
 
+	    User user = authService.getCurrentUser();
+	    if (user == null) {
+	        throw new InvalidException("User not authenticated");
+	    }
+
+	    Customer customer = getCustomer();
+	    List<PassengerDto> passengers = dto.getPassengers();
+	    if (passengers == null || passengers.isEmpty()) {
+	        throw new InvalidException("Enter passenger details");
+	    }
+	    if (!schedule.getSchStatus().equalsIgnoreCase("SCHEDULED")) {
+	        throw new InvalidException("Cannot book for this schedule as it has started or completed");
+	    }
+	    if (schedule.getAvlSeats() < passengers.size()) {
+	        throw new InvalidException(passengers.size() + " seats are not available");
+	    }
+	    BusBooking booking = new BusBooking();
+	    booking.setSchedule(schedule);
+	    booking.setCustomer(customer);
+	    booking.setBookingDt(LocalDate.now());
+	    booking.setBookingStatus("CONFIRMED");
+
+	    List<Passenger> passengerEntities = new ArrayList<>();
+
+	    for (PassengerDto p : passengers) {
+	        Passenger entity = new Passenger();
+	        entity.setPassengerName(p.getPassengerName());
+	        entity.setPassengerAge(p.getPassengerAge());
+	        entity.setSeatNo(p.getSeatNo());
+	        entity.setBooking(booking);
+
+	        passengerEntities.add(entity);
+	    }
+	    schedule.setAvlSeats(schedule.getAvlSeats() - passengers.size());
+	    rsRepo.save(schedule);
+
+	    booking.setPassengers(passengerEntities);
+
+	    return bsRepo.save(booking);
+	}
+	
+	
 	@Override
-	public List<BusBooking> viewByCustomerBookings(Long custId) {
+	public List<BusBooking> viewByCustomerBookings() {
 		
-		Optional<Customer> customer= cRepo.findById(custId);
-		if(customer.isEmpty())
-			throw new NotFoundException("Customer not found!");	
-		return bsRepo.findByCustomer(customer.get());
+		Customer customer= getCustomer();
+		return bsRepo.findByCustomer(customer);
 	}
 
 	@Override
@@ -155,6 +166,16 @@ public class BTBServiceImpl implements BTBService
 			throw new BadRequestException("All seats are booked!");
 			
 		return rsRepo.getBookedSeats(scheduleId);
+	}
+
+	@Override
+	public Customer getCustomer() 
+	{
+	    User user = authService.getCurrentUser();
+
+	    return cRepo.findByUserUsername(user.getUsername())
+	            .orElseThrow(() -> new NotFoundException(
+	                    "Customer not found for username: " + user.getUsername()));
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.List;
 public class BookingRequestDto 
 {
 	private Long scheduleId;
-	private Long custId;
 	private List<PassengerDto> passengers;
 	public List<PassengerDto> getPassengers() {
 		return passengers;
@@ -19,13 +18,6 @@ public class BookingRequestDto
 	public void setScheduleId(Long scheduleId) {
 		this.scheduleId = scheduleId;
 	}
-	public Long getCustId() {
-		return custId;
-	}
-	public void setCustId(Long custId) {
-		this.custId = custId;
-	}
 	
-	
-	
+
 }

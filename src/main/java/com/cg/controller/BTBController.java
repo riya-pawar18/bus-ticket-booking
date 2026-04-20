@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cg.dtos.BookingRequestDto;
@@ -35,13 +36,14 @@ public class BTBController
 	@PostMapping("/book-ticket")
 	public ResponseEntity<BusBooking> bookTicket(@RequestBody BookingRequestDto dto)
 	{
+		
 		return new ResponseEntity<>(service.bookTicket(dto),HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/bookings/{custId}")
-	public ResponseEntity<List<BusBooking>> viewByCustomerBookings(@PathVariable Long custId)
+	@GetMapping("/bookings/customer")
+	public ResponseEntity<List<BusBooking>> viewByCustomerBookings()
 	{
-		return new ResponseEntity<>(service.viewByCustomerBookings(custId),HttpStatus.OK);
+		return new ResponseEntity<>(service.viewByCustomerBookings(),HttpStatus.OK);
 	}
 	
 	@GetMapping("/bookings/passengers/{bookingId}")
@@ -51,9 +53,15 @@ public class BTBController
 	}
 	
 	@GetMapping("/schedules")
-	public ResponseEntity<List<RouteScheduleDto>> viewSchedules(@RequestBody BusRouteDto dto)
+	public ResponseEntity<List<RouteScheduleDto>> viewSchedules(
+	        @RequestParam String source,
+	        @RequestParam String dest) 
 	{
-		return new ResponseEntity<>(service.viewSchedules(dto),HttpStatus.OK);
+	    BusRouteDto dto = new BusRouteDto();
+	    dto.setSource(source);
+	    dto.setDest(dest);
+
+	    return new ResponseEntity<>(service.viewSchedules(dto), HttpStatus.OK);
 	}
 	
 	@GetMapping("/booked/{scheduleId}")
