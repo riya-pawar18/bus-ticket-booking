@@ -55,6 +55,7 @@ public class BTBServiceImpl implements BTBService
 		schedule.setScheduleDt(dto.getScheduleDt());
 		schedule.setAvlSeats(dto.getAvlSeats());
 		schedule.setTotSeats(dto.getTotSeats());
+		schedule.setBusFare(dto.getBusFare());
 		if(dto.getScheduleDt().isBefore(LocalDate.now()))
 			schedule.setSchStatus("COMPLETED");
 		else if(dto.getScheduleDt().isAfter(LocalDate.now()))
@@ -98,6 +99,9 @@ public class BTBServiceImpl implements BTBService
 	    booking.setBookingDt(LocalDate.now());
 	    booking.setBookingStatus("CONFIRMED");
 
+	    Double totalFare = schedule.getBusFare()*passengers.size();
+	    booking.setTotalFare(totalFare);
+	    
 	    List<Passenger> passengerEntities = new ArrayList<>();
 
 	    for (PassengerDto p : passengers) {

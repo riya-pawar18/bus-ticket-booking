@@ -3,9 +3,9 @@ package com.cg.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,6 +36,16 @@ public class BusBooking
 	private List<Passenger> passengers;
 	public Long getId() {
 		return id;
+	}
+	
+	@Column(name = "total_fare", nullable = false)
+	private Double totalFare;
+	
+	public Double getTotalFare() {
+		return totalFare;
+	}
+	public void setTotalFare(Double totalFare) {
+		this.totalFare = totalFare;
 	}
 	public void setId(Long id) {
 		this.id = id;

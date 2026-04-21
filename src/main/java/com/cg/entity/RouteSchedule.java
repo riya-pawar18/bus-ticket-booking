@@ -3,6 +3,7 @@ package com.cg.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,10 +22,17 @@ public class RouteSchedule
 	private BusRoute busRoute;
 	private LocalTime departureTime;
 	private LocalDate scheduleDt;
-	// Double busFare;
 	private Integer avlSeats;
 	private Integer totSeats;
 	private String schStatus;
+	@Column(name = "bus_fare", nullable = false)
+	private Double busFare;
+	public Double getBusFare() {
+		return busFare;
+	}
+	public void setBusFare(Double busFare) {
+		this.busFare = busFare;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -10,6 +10,14 @@ public class RouteScheduleDto
 	private LocalDate scheduleDt;
 	private Integer avlSeats;
 	private Integer totSeats;
+	private Double busFare;
+	
+	public Double getBusFare() {
+		return busFare;
+	}
+	public void setBusFare(Double busFare) {
+		this.busFare = busFare;
+	}
 	public Long getRouteId() {
 		return routeId;
 	}
