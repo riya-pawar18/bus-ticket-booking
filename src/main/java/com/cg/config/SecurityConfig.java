@@ -34,7 +34,7 @@ public class SecurityConfig
 				.authenticationProvider(provider)
 				.authorizeHttpRequests(auth->auth.requestMatchers("/auth/login", "/auth/register").permitAll())
 				.authorizeHttpRequests(auth->auth.requestMatchers("/generateToken").permitAll())
-				.authorizeHttpRequests(auth->auth.requestMatchers("/bus/**").authenticated())
+				.authorizeHttpRequests(auth->auth.requestMatchers("/bus/**","/auth/me").authenticated())
 				.sessionManagement(sess->sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class)
 				.build();

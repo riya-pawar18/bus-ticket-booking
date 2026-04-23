@@ -69,4 +69,5 @@ public class BTBController
 	{
 		return new ResponseEntity<>(service.getBookedSeats(scheduleId),HttpStatus.OK);
 	}
+	
 }

@@ -1,4 +1,5 @@
 package com.cg.filters;
+import jakarta.servlet.http.Cookie;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,34 +28,71 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
 
 	@Autowired
 	private JwtService jwtService;
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException 
-	{
-		String authHeader= request.getHeader("Authorization");
-		String token= null;
-		String username= null;
-		
-		if(authHeader!= null && authHeader.startsWith("Bearer "))
-		{
-			token= authHeader.substring(7);
-			username= jwtService.extractUsername(token);
-		}
-		if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null)
-		{
-			List<String> roles= jwtService.getRoles(token);
-			var authorities= roles.stream().map(SimpleGrantedAuthority::new).toList();
-			UserDetails userDetails= userDetailsService.loadUserByUsername(username);
-			if(jwtService.validateToken(token, userDetails))
-			{
-				UsernamePasswordAuthenticationToken authToken= new UsernamePasswordAuthenticationToken(username, null, authorities);
-				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authToken);
-			}
-		}
-		filterChain.doFilter(request, response);
-		
-	}
 	
+	@Override
+	protected void doFilterInternal(HttpServletRequest request,
+	                               HttpServletResponse response,
+	                               FilterChain filterChain)
+	        throws ServletException, IOException {
+		
+
+	    String token = null;
+	    String username = null;
+	    String path = request.getServletPath();
+
+	    if (path.equals("/auth/login") || path.equals("/auth/register")) {
+	        filterChain.doFilter(request, response);
+	        return;
+	    }
+
+	    // 🔥 1. Try Authorization header
+	    String authHeader = request.getHeader("Authorization");
+
+	    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+	        token = authHeader.substring(7);
+	    }
+
+	    // 🔥 2. If no header, try cookie
+	    if (token == null && request.getCookies() != null) {
+	        for (Cookie cookie : request.getCookies()) {
+	            if ("refreshToken".equals(cookie.getName())) {
+	                token = cookie.getValue();
+	                break;
+	            }
+	        }
+	    }
+
+	    // 🔥 3. Extract username only once
+	    if (token != null) {
+	        try {
+	            username = jwtService.extractUsername(token);
+	        } catch (Exception e) {
+	            System.out.println("Invalid token: " + e.getMessage());
+	        }
+	    }
+
+	    // 🔥 4. Authenticate
+	    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+	        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+	        if (jwtService.validateToken(token, userDetails)) {
+
+	            List<String> roles = jwtService.getRoles(token);
+	            var authorities = roles.stream()
+	                    .map(SimpleGrantedAuthority::new)
+	                    .toList();
+
+	            UsernamePasswordAuthenticationToken authToken =
+	                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+
+	            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+	            SecurityContextHolder.getContext().setAuthentication(authToken);
+	        }
+	    }
+
+	    filterChain.doFilter(request, response);
+	}
 
 }

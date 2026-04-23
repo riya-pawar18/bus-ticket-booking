@@ -57,7 +57,7 @@ public class BTBServiceImpl implements BTBService
 		schedule.setTotSeats(dto.getTotSeats());
 		schedule.setBusFare(dto.getBusFare());
 		if(dto.getScheduleDt().isBefore(LocalDate.now()))
-			schedule.setSchStatus("COMPLETED");
+			throw new BadRequestException("Past Date not Allowed");
 		else if(dto.getScheduleDt().isAfter(LocalDate.now()))
 			schedule.setSchStatus("SCHEDULED");
 		else 
@@ -152,10 +152,13 @@ public class BTBServiceImpl implements BTBService
 		for(RouteSchedule r: route.getSchedules())
 		{
 			RouteScheduleDto dto= new RouteScheduleDto();
+			   dto.setScheduleId(r.getId()); 
 			dto.setDepartureTime(r.getDepartureTime());
 			dto.setAvlSeats(r.getAvlSeats());
 			dto.setTotSeats(r.getTotSeats());
 			dto.setScheduleDt(r.getScheduleDt());
+			dto.setRouteId(r.getId());
+			dto.setBusFare(r.getBusFare());
 			list.add(dto);
 		}
 		return list;

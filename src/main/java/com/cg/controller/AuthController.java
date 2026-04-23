@@ -1,5 +1,7 @@
 package com.cg.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,21 +39,16 @@ public class AuthController
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto dto, HttpServletResponse response)
-	{
-		LoginResponseDto res= authService.login(dto);
-		String token= res.getToken();
-		String cookie= String.format("refreshToken=%s; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=%d",
-				token,jwtConfig.getTokenExpiration());
-		response.addHeader("Set-Cookie", cookie);
-		return new ResponseEntity<>(res,HttpStatus.OK);
+	public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto dto) {
+	    LoginResponseDto res = authService.login(dto);
+	    return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 	@GetMapping("/me")
-    public ResponseEntity<?> me(Authentication auth) {
-        if (auth == null || !auth.isAuthenticated()) {
-            return ResponseEntity.status(401).build();
-        }
-        return ResponseEntity.ok(auth.getName()); 
-    }
+	public ResponseEntity<?> me(Authentication auth) {
+	    if (auth == null || !auth.isAuthenticated()) {
+	        return ResponseEntity.status(401).build();
+	    }
+	    return ResponseEntity.ok(Map.of("username", auth.getName()));
+	}
 	
 }

@@ -5,6 +5,7 @@ import java.time.LocalTime;
 
 public class RouteScheduleDto 
 {
+	 private Long scheduleId; 
 	private Long routeId;
 	private LocalTime departureTime;
 	private LocalDate scheduleDt;
@@ -12,6 +13,8 @@ public class RouteScheduleDto
 	private Integer totSeats;
 	private Double busFare;
 	
+	   public Long getScheduleId() { return scheduleId; }
+	    public void setScheduleId(Long scheduleId) { this.scheduleId = scheduleId; }
 	public Double getBusFare() {
 		return busFare;
 	}
