@@ -1,0 +1,57 @@
+<div class="container mt-4">
+  <div class="card p-4 shadow">
+    <h3 class="text-center mb-4">Add Bus Schedule</h3>
+
+    <form (ngSubmit)="addSchedule()">
+      <input
+        class="form-control mb-2"
+        placeholder="Route ID"
+        [(ngModel)]="schedule.routeId"
+        name="routeId"
+        required
+      />
+
+      <input
+        class="form-control mb-2"
+        type="time"
+        [(ngModel)]="schedule.departureTime"
+        name="departureTime"
+        required
+      />
+
+      <input
+        class="form-control mb-2"
+        type="date"
+        [(ngModel)]="schedule.scheduleDt"
+        name="scheduleDt"
+        required
+      />
+
+      <input
+        class="form-control mb-2"
+        placeholder="Available Seats"
+        [(ngModel)]="schedule.avlSeats"
+        name="avlSeats"
+        required
+      />
+
+      <input
+        class="form-control mb-2"
+        placeholder="Total Seats"
+        [(ngModel)]="schedule.totSeats"
+        name="totSeats"
+        required
+      />
+
+      <input
+        class="form-control mb-2"
+        placeholder="Fare"
+        [(ngModel)]="schedule.busFare"
+        name="busFare"
+        required
+      />
+
+      <button class="btn btn-success w-100 mt-2">Add Schedule</button>
+    </form>
+  </div>
+</div>

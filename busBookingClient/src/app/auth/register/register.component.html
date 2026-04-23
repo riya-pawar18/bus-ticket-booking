@@ -1,0 +1,109 @@
+<div
+  class="d-flex justify-content-center align-items-center my-3"
+  style="min-height: 100vh"
+>
+  <div class="card shadow p-5" style="width: 500px">
+    <h3 class="text-center mb-4">Register</h3>
+
+    <div class="text-center mt-2">
+      <p [class.text-success]="success" [class.text-danger]="!success">
+        {{ msg }}
+      </p>
+    </div>
+
+    <form class="p-2" #f="ngForm" (ngSubmit)="onRegister()">
+      <!-- Name -->
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="name"
+          [(ngModel)]="user.name"
+          placeholder="Enter your name"
+          required
+          #name="ngModel"
+        />
+      </div>
+      <div class="text-danger" *ngIf="name.invalid && name.touched">
+        Name is required
+      </div>
+
+      <!-- Username -->
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          name="username"
+          [(ngModel)]="user.username"
+          placeholder="Enter username"
+          required
+          #username="ngModel"
+        />
+      </div>
+      <div class="text-danger" *ngIf="username.invalid && username.touched">
+        Username is required
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          [(ngModel)]="user.password"
+          placeholder="Enter password"
+          required
+          minlength="6"
+          #password="ngModel"
+        />
+      </div>
+
+      <div class="text-danger" *ngIf="password.touched">
+        <div *ngIf="password.errors?.['required']">Password is required</div>
+        <div
+          *ngIf="
+            !password.errors?.['required'] && password.errors?.['minlength']
+          "
+        >
+          Minimum 4 characters required
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-3">
+        <label class="form-label">Phone</label>
+        <input
+          type="tel"
+          class="form-control"
+          name="phone"
+          [(ngModel)]="user.phone"
+          placeholder="Enter phone number"
+          required
+          pattern="[0-9]{10}"
+          #phone="ngModel"
+        />
+      </div>
+
+      <div class="text-danger" *ngIf="phone.touched">
+        <div *ngIf="phone.errors?.['required']">Phone is required</div>
+        <div *ngIf="phone.errors?.['pattern']">
+          Enter valid 10-digit phone number
+        </div>
+      </div>
+
+      <!-- Button -->
+      <button class="btn btn-dark w-100" [disabled]="f.invalid">
+        Register
+      </button>
+
+      <!-- Login -->
+      <p class="text-center mt-3">
+        Already have an account?
+        <a routerLink="/login" class="text-decoration-none">Login</a>
+      </p>
+    </form>
+  </div>
+</div>

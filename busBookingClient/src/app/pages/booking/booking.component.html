@@ -1,0 +1,93 @@
+<div class="container mt-5">
+  <div class="row">
+    <!-- LEFT: SEATS -->
+    <div class="col-md-6">
+      <div class="card shadow p-3">
+        <h5 class="text-center mb-3">Select Seats</h5>
+
+        <div class="seat-wrapper">
+          <div class="seat-container">
+            <div *ngFor="let row of seats" class="seat-row">
+              <!-- LEFT -->
+              <div class="seat-group">
+                <button
+                  *ngFor="let seat of row.left"
+                  class="btn seat-btn"
+                  [ngClass]="{
+                    'btn-outline-secondary':
+                      !isBooked(seat) && !isSelected(seat),
+                    'btn-success': isSelected(seat),
+                    'btn-danger': isBooked(seat),
+                  }"
+                  (click)="toggleSeat(seat)"
+                  [disabled]="isBooked(seat)"
+                >
+                  {{ seat }}
+                </button>
+              </div>
+
+              <!-- RIGHT -->
+              <div class="seat-group right">
+                <button
+                  *ngFor="let seat of row.right"
+                  class="btn seat-btn"
+                  [ngClass]="{
+                    'btn-outline-secondary':
+                      !isBooked(seat) && !isSelected(seat),
+                    'btn-success': isSelected(seat),
+                    'btn-danger': isBooked(seat),
+                  }"
+                  (click)="toggleSeat(seat)"
+                  [disabled]="isBooked(seat)"
+                >
+                  {{ seat }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEGEND -->
+        <div class="text-center mt-3">
+          <span class="badge bg-secondary me-2">Available</span>
+          <span class="badge bg-success me-2">Selected</span>
+          <span class="badge bg-danger">Booked</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PASSENGER FORM -->
+    <div class="col-md-6">
+      <div class="card p-3 shadow">
+        <h5 class="text-center mb-3">Passenger Details</h5>
+
+        <div *ngFor="let p of passengers; let i = index" class="mb-3">
+          <h6>Passenger {{ i + 1 }}</h6>
+
+          <input
+            class="form-control mb-2"
+            placeholder="Name"
+            [(ngModel)]="p.passengerName"
+            name="name{{ i }}"
+          />
+
+          <input
+            class="form-control"
+            type="number"
+            placeholder="Age"
+            [(ngModel)]="p.passengerAge"
+            name="age{{ i }}"
+          />
+        </div>
+
+        <button
+          class="btn btn-success w-100 mt-3"
+          (click)="book()"
+          [disabled]="selectedSeats.length === 0"
+        >
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

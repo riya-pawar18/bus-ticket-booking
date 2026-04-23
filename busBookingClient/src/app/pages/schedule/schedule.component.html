@@ -1,0 +1,65 @@
+<div class="container mt-4">
+  <div class="card shadow p-4 mx-auto" style="max-width: 500px">
+    <h3 class="text-center mb-4">Bus Schedule</h3>
+
+    <form #f="ngForm" (ngSubmit)="searchSchedule()">
+      <div class="mb-3">
+        <label>Source</label>
+        <select
+          class="form-select"
+          name="source"
+          [(ngModel)]="schedule.source"
+          required
+        >
+          <option value="" disabled>Select</option>
+          <option *ngFor="let s of states">{{ s }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label>Destination</label>
+        <select
+          class="form-select"
+          name="destination"
+          [(ngModel)]="schedule.destination"
+          required
+        >
+          <option value="" disabled>Select</option>
+          <option *ngFor="let s of states">{{ s }}</option>
+        </select>
+      </div>
+
+      <button class="btn btn-success w-100" [disabled]="f.invalid">
+        Search
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="container mt-4" *ngIf="schedules.length > 0">
+  <div class="card p-3 shadow mb-3" *ngFor="let bus of schedules">
+    <div class="row align-items-center text-center">
+      <div class="col-md-3">
+        <b>{{ schedule.source }}</b> → <b>{{ schedule.destination }}</b>
+      </div>
+
+      <div class="col-md-3">
+        {{ bus.departureTime }} <br />
+        <small>{{ bus.scheduleDt }}</small>
+      </div>
+
+      <div class="col-md-2">
+        <span class="badge bg-warning"> {{ bus.avlSeats }} seats </span>
+      </div>
+
+      <div class="col-md-2 text-danger fw-bold">₹{{ bus.busFare }}</div>
+
+      <div class="col-md-2">
+        <button class="btn btn-success" (click)="goToBooking(bus.scheduleId)">
+          Book
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<div class="container mt-4">
+  <div class="text-end mb-3">
+    <button class="btn btn-primary" routerLink="/add-schedule">
+      + Add Schedule
+    </button>
+  </div>
+  <h3 class="text-center mb-4">My Bookings</h3>
+
+  <!-- NO BOOKINGS -->
+  <div *ngIf="bookings.length === 0" class="text-center text-muted">
+    No bookings found
+  </div>
+
+  <!-- BOOKINGS LIST -->
+  <div *ngFor="let b of bookings" class="card shadow mb-3 p-3">
+    <div class="row align-items-center">
+      <!-- ROUTE -->
+      <div class="col-md-3 text-center">
+        <h5 class="text-success">
+          {{ b.schedule.busRoute.src }} → {{ b.schedule.busRoute.dest }}
+        </h5>
+      </div>
+
+      <!-- DATE + TIME -->
+      <div class="col-md-3 text-center">
+        <div>
+          <strong>{{ b.schedule.scheduleDt }}</strong>
+        </div>
+        <div class="text-muted">{{ b.schedule.departureTime }}</div>
+      </div>
+
+      <!-- SEATS -->
+      <div class="col-md-3 text-center">
+        <div>
+          Seats:
+          <span *ngFor="let p of b.passengers">
+            {{ p.seatNo }}
+          </span>
+        </div>
+      </div>
+
+      <!-- FARE -->
+      <div class="col-md-3 text-center">
+        <div class="text-danger fw-bold">₹{{ b.totalFare }}</div>
+        <small class="text-success">{{ b.bookingStatus }}</small>
+      </div>
+    </div>
+  </div>
+</div>

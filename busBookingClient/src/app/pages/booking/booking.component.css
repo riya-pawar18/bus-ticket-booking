@@ -1,0 +1,43 @@
+/* Wrapper */
+.seat-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+/* 🔥 THIS FIXES ROW STACKING */
+.seat-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each row */
+.seat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Seat groups */
+.seat-group {
+  display: flex;
+  gap: 6px;
+}
+
+/* Aisle */
+.seat-group.right {
+  margin-left: 30px;
+}
+
+/* Seat styling */
+.seat-btn {
+  width: 48px;
+  height: 48px;
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 0;
+}
+
+/* Prevent overflow */
+.card {
+  overflow: hidden;
+}
